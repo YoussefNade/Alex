@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>دليل رحلة إسكندرية 🌊</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+
+        :root {
+            --primary: #00d4ff;
+            --bg: #050a18;
+            --card-bg: #111a2b;
+            --accent: #f1c40f;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: #fff;
+            padding-bottom: 50px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: linear-gradient(180deg, #111a2b 0%, #050a18 100%);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .days-nav {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .day-btn {
+            background: #1e293b;
+            border: 1px solid #334155;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .day-btn.active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .cats-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+
+        .cat-btn {
+            background: #1e293b;
+            border: none;
+            color: #94a3b8;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .cat-btn.active {
+            background: var(--accent);
+            color: #000;
+        }
+
+        .place-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #1e293b;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .place-name {
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin: 0 0 10px 0;
+            border-right: 4px solid var(--primary);
+            padding-right: 10px;
+        }
+
+        .map-box {
+            width: 100%;
+            height: 250px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid #334155;
+            margin-top: 10px;
+        }
+
+        iframe { width: 100%; height: 100%; border: none; }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>إسكندرية 2026 🌊</h1>
+    <p>اختار مكانك.. واللوكيشن علينا</p>
+</div>
+
+<div class="container">
+    <div class="days-nav">
+        <button class="day-btn active" onclick="changeDay(1, this)">اليوم 1</button>
+        <button class="day-btn" onclick="changeDay(2, this)">اليوم 2</button>
+        <button class="day-btn" onclick="changeDay(3, this)">اليوم 3</button>
+        <button class="day-btn" onclick="changeDay(4, this)">اليوم 4</button>
+    </div>
+
+    <div class="cats-nav">
+        <button class="cat-btn active" onclick="changeCat('breakfast', this)">🍳 اختيارات الفطار</button>
+        <button class="cat-btn" onclick="changeCat('outing', this)">🏰 أماكن خروجات</button>
+        <button class="cat-btn" onclick="changeCat('lunch', this)">🐟 مطاعم غداء</button>
+        <button class="cat-btn" onclick="changeCat('night', this)">🌙 سهرات بالليل</button>
+    </div>
+
+    <div id="displayArea">
+        </div>
+</div>
+
+<script>
+    const tripData = {
+        1: {
+            breakfast: [
+                { name: "مطعم محمد أحمد (محطة الرمل)", map: "Mohamed Ahmed, Alexandria" },
+                { name: "ألبان سويسرا (كامب شيزار)", map: "Alban Swissra, Alexandria" },
+                { name: "فول وعم محمد (بحري)", map: "Mohamed Ahmed, Alexandria" }
+            ],
+            outing: [
+                { name: "قلعة قايتباي", map: "Citadel of Qaitbay" },
+                { name: "مكتبة الإسكندرية", map: "Bibliotheca Alexandrina" }
+            ],
+            lunch: [
+                { name: "أسماك بلبع (سيدي بشر)", map: "Balbaa Seafood Village" },
+                { name: "حلقة السمك (الأنفوشي)", map: "Anfoushi Fish Market" }
+            ],
+            night: [
+                { name: "جليم باي (Gleem Bay)", map: "Gleem Bay" },
+                { name: "ستانلي كوبري", map: "Stanley Bridge" }
+            ]
+        },
+        2: {
+            breakfast: [
+                { name: "تريانون (محطة الرمل)", map: "Trianon, Alexandria" },
+                { name: "البن البرازيلي", map: "Brazilian Coffee Stores" }
+            ],
+            outing: [
+                { name: "متحف المجوهرات الملكية", map: "Royal Jewelry Museum" },
+                { name: "سان ستيفانو مول", map: "San Stefano Grand Plaza" }
+            ],
+            lunch: [
+                { name: "كبدة الفلاح (محطة الرمل)", map: "Kebdet El Falalah" },
+                { name: "حواوشي الربيع", map: "Hawawshi El Rabie" }
+            ],
+            night: [
+                { name: "لاتينو كافيه (سيدي جابر)", map: "Latino Cafe Alexandria" },
+                { name: "تيفولي دوم", map: "Tivoli Dome Alexandria" }
+            ]
+        },
+        3: {
+            breakfast: [
+                { name: "جاد الكورنيش", map: "Gad Alexandria" },
+                { name: "فينيسيا (رشدي)", map: "Venizia, Roushdy" }
+            ],
+            outing: [
+                { name: "حدائق المنتزه", map: "Montaza Palace" },
+                { name: "جرين بلازا", map: "Green Plaza Mall" }
+            ],
+            lunch: [
+                { name: "واحة خطاب (برج العرب)", map: "Wahat Khattab" },
+                { name: "قرية هاني", map: "Hani Village Alexandria" }
+            ],
+            night: [
+                { name: "قهوة فاروق (بحري)", map: "Farouk Cafe Alexandria" },
+                { name: "مجمع سان ستيفانو", map: "San Stefano" }
+            ]
+        },
+        4: {
+            breakfast: [
+                { name: "ذا روستري (سموحة)", map: "The Roastery Alexandria" },
+                { name: "دليس (Delices)", map: "Delices, Alexandria" }
+            ],
+            outing: [
+                { name: "المعمورة الشاطئ", map: "Maamoura Beach" },
+                { name: "رحلة يخت من المينا", map: "Alexandria Yacht Club" }
+            ],
+            lunch: [
+                { name: "مطعم زيفرون (المكس)", map: "Zephyrion Restaurant" },
+                { name: "فيش ماركت", map: "Fish Market Alexandria" }
+            ],
+            night: [
+                { name: "جيلاتي عزة", map: "Gelati Azza" },
+                { name: "تمشية في سموحة", map: "Smouha" }
+            ]
+        }
+    };
+
+    let selectedDay = 1;
+    let selectedCat = 'breakfast';
+
+    function render() {
+        const area = document.getElementById('displayArea');
+        const places = tripData[selectedDay][selectedCat];
+        area.innerHTML = '';
+
+        places.forEach(place => {
+            const mapUrl = `https://maps.google.com/maps?q=${encodeURIComponent(place.map + " Alexandria Egypt")}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+            
+            const div = document.createElement('div');
+            div.className = 'place-card';
+            div.innerHTML = `
+                <h3 class="place-name">${place.name}</h3>
+                <div class="map-box">
+                    <iframe src="${mapUrl}"></iframe>
+                </div>
+            `;
+            area.appendChild(div);
+        });
+    }
+
+    function changeDay(day, btn) {
+        selectedDay = day;
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    function changeCat(cat, btn) {
+        selectedCat = cat;
+        document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        render();
+    }
+
+    // تشغيل تلقائي
+    window.onload = render;
+</script>
+
+</body>
+</html>
